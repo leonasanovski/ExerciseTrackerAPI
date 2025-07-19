@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: exercise-tracker
+  profiles:
+    active: jpa
+  jpa:
+    hibernate:
+      ddl-auto: update
