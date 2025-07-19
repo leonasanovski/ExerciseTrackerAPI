@@ -22,7 +22,10 @@ class UserController(
     fun createUser(@RequestParam username: String): ResponseEntity<Any> {
         val user = userService.saveUser(username)
         return ResponseEntity.ok(
-            mapOf("username" to user.username, "_id" to user.id.toString())
+            mapOf(
+                "username" to user.username,
+                "_id" to user.id.toString()
+            )
         )
     }
 
@@ -41,8 +44,8 @@ class UserController(
         @RequestParam duration: Int,
         @RequestParam(required = false) date: String?
     ): ResponseEntity<Any> {
-        val parsedDate = date?.let { LocalDate.parse(it) }
-        val createdExercise = exerciseService.createExercise(id, description, duration, parsedDate)
+        val createdExercise =
+            exerciseService.createExercise(id, description, duration, date?.let { LocalDate.parse(it) })
         val response = mapOf(
             "username" to createdExercise.user.username,
             "_id" to createdExercise.user.id.toString(),
@@ -60,10 +63,8 @@ class UserController(
         @RequestParam(required = false) to: String?,
         @RequestParam(required = false) limit: Int?
     ): ResponseEntity<Any> {
-        val user = userRepository.findById(UUID.fromString(id))
-            ?: return ResponseEntity.badRequest().body("User with id = $id not found")
-
-        var logs = user.exercises.sortedBy { it.date }
+        val user = userRepository.findById(UUID.fromString(id)) ?: return ResponseEntity.notFound().build()
+        var logs = user.exercises.sortedByDescending { it.date }
         from?.let {
             val fromDate = LocalDate.parse(it)
             logs = logs.filter { ex -> ex.date >= fromDate }
@@ -82,7 +83,6 @@ class UserController(
                 "date" to it.date.format(formatter)
             )
         }
-
         return ResponseEntity.ok(
             mapOf(
                 "username" to user.username,
