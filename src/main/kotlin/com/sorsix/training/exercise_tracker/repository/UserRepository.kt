@@ -10,4 +10,3 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findByUsername(username: String): User?
     fun findById(id: UUID): User?
 }
-//TODO - ASK TOMCHE ABOUT USER? OR OPTIONAL<USER>, WHAT IS BETTER TO USE IN PRACTICE
