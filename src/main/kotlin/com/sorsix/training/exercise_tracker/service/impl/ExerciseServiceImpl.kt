@@ -1,6 +1,7 @@
 package com.sorsix.training.exercise_tracker.service.impl
 
 import com.sorsix.training.exercise_tracker.domain.Exercise
+import com.sorsix.training.exercise_tracker.exception.NoUserFoundException
 import com.sorsix.training.exercise_tracker.repository.ExerciseRepository
 import com.sorsix.training.exercise_tracker.repository.UserRepository
 import com.sorsix.training.exercise_tracker.service.ExerciseService
@@ -14,17 +15,16 @@ class ExerciseServiceImpl(
     private val userRepository: UserRepository
 ) : ExerciseService {
     override fun createExercise(id: String, description: String, duration: Int, date: LocalDate?): Exercise {
-        val user = userRepository.findById(UUID.fromString(id))
-        if (user != null) {
-            val exercise = Exercise(
-                description = description,
-                duration = duration,
-                date = date ?: LocalDate.now(),
-                user = user,
-            )
-            exerciseRepository.save(exercise)
-            return exercise
-        }
-        throw RuntimeException("User with id=$id doesn't exist")
+        val user =
+            userRepository.findById(UUID.fromString(id))
+                ?: throw NoUserFoundException("There is no user register with id: $id")
+        val exercise = Exercise(
+            description = description,
+            duration = duration,
+            date = date ?: LocalDate.now(),
+            user = user,
+        )
+        exerciseRepository.save(exercise)
+        return exercise
     }
 }
